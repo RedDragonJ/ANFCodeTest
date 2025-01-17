@@ -18,8 +18,20 @@ class ANFExploreCardTableViewController: UITableViewController {
         tableView.rowHeight = UITableView.automaticDimension
         tableView.separatorStyle = .none
 
-        if exploreData.isEmpty {
-            exploreData = dataProvider.fetchData()
+        fetchData()
+    }
+
+    private func fetchData() {
+        dataProvider.fetchData { [weak self] result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let data):
+                    self?.exploreData = data
+                    self?.tableView.reloadData()
+                case .failure(let error):
+                    print("Failed to fetch data: \(error.localizedDescription)")
+                }
+            }
         }
     }
 

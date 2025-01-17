@@ -8,5 +8,5 @@
 import Foundation
 
 protocol ExploreDataProvider {
-    func fetchData() -> [ExploreItem]
+    func fetchData(completion: @escaping (Result<[ExploreItem], Error>) -> Void)
 }

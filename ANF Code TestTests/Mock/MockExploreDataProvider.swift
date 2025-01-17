@@ -8,11 +8,11 @@
 import Foundation
 
 class MockExploreDataProvider: ExploreDataProvider {
-    func fetchData() -> [ExploreItem] {
-        return [
+    func fetchData(completion: @escaping (Result<[ExploreItem], Error>) -> Void) {
+        let mockData = [
             ExploreItem(
                 title: "Test Title 1",
-                backgroundImage: "background1.jpg",
+                backgroundImage: URL(string: "https://img.abercrombie.com/is/image/anf/ANF-2024-060624-M-HP-NewArrivals-USCA-Mens.jpg")!,
                 content: [
                     ContentItem(elementType: "button", target: URL(string: "https://example.com/1"), title: "Learn More")
                 ],
@@ -22,7 +22,7 @@ class MockExploreDataProvider: ExploreDataProvider {
             ),
             ExploreItem(
                 title: "Test Title 2",
-                backgroundImage: "background2.jpg",
+                backgroundImage: URL(string: "https://img.abercrombie.com/is/image/anf/ANF-2024-060624-M-HP-NewArrivals-USCA-Mens.jpg")!,
                 content: [
                     ContentItem(elementType: "button", target: URL(string: "https://example.com/2"), title: "Shop Now"),
                     ContentItem(elementType: "link", target: URL(string: "https://example.com/3"), title: "View Details")
@@ -32,6 +32,7 @@ class MockExploreDataProvider: ExploreDataProvider {
                 bottomDescription: "Bottom Description 2"
             )
         ]
+        completion(.success(mockData))
     }
 }
 
