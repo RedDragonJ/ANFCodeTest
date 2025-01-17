@@ -28,17 +28,62 @@ class ANFExploreCardTableViewControllerTests: XCTestCase {
     }
     
     func test_numberOfRows_ShouldBeTen() {
-        let numberOfRows = testInstance.tableView(testInstance.tableView, numberOfRowsInSection: 0)
-        XCTAssert(numberOfRows == 2, "table view should have 10 cells")
+        let expectation = XCTestExpectation(description: "Data is loaded and table view is updated")
+
+        // Wait for viewDidLoad to trigger fetchData and update the table view
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            guard let self = self else { return }
+
+            let numberOfRows = self.testInstance.tableView(self.testInstance.tableView, numberOfRowsInSection: 0)
+            XCTAssert(numberOfRows == 2, "Table view should have 2 cells")
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1.0)
     }
     
     func test_cellForRowAtIndexPath_titleText_shouldMatchMockData() {
-        let cell = fetchConfiguredCell(at: IndexPath(row: 0, section: 0))
-        XCTAssertEqual(cell?.titleLabel.text, "Test Title 1", "The title should match the mock data")
+        let expectation = XCTestExpectation(description: "Data is loaded and table view is updated")
+
+        // Wait for data fetching to complete
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            guard let self = self else { return }
+            let cell = self.fetchConfiguredCell(at: IndexPath(row: 0, section: 0))
+            XCTAssertEqual(cell?.titleLabel.text, "Test Title 1", "The title should match the mock data")
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1.0)
     }
 
     func test_cellForRowAtIndexPath_promoMessage_shouldMatchMockData() {
-        let cell = fetchConfiguredCell(at: IndexPath(row: 0, section: 0))
-        XCTAssertEqual(cell?.promoMessageLabel.text, "Promo 1", "The promo message should match the mock data")
+        let expectation = XCTestExpectation(description: "Data is loaded and table view is updated")
+
+        // Wait for data fetching to complete
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            guard let self = self else { return }
+            let cell = self.fetchConfiguredCell(at: IndexPath(row: 0, section: 0))
+            XCTAssertEqual(cell?.promoMessageLabel.text, "Promo 1", "The promo message should match the mock data")
+            expectation.fulfill()
+        }
+
+        wait(for: [expectation], timeout: 1.0)
     }
+
+    func testFetchData() {
+        let expectation = XCTestExpectation(description: "Data fetched and table view reloaded")
+
+        testInstance.dataProvider.fetchData { result in
+            switch result {
+            case .success(let data):
+                XCTAssertEqual(data.count, 2, "Mock data should have one item")
+                expectation.fulfill()
+            case .failure:
+                XCTFail("Data fetching failed")
+            }
+        }
+
+        wait(for: [expectation], timeout: 1.0)
+    }
+
 }

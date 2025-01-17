@@ -55,10 +55,15 @@ class ANFExploreTableViewCell: UITableViewCell {
     func configure(with exploreItem: ExploreItem) {
         self.exploreItem = exploreItem
 
-        if let backgroundImageName = exploreItem.backgroundImage,
-            let image = UIImage(named: backgroundImageName) {
-            backgroundImage.isHidden = false
-            backgroundImage.image = image
+        if let backgroundImageURL = exploreItem.backgroundImage {
+            downloadImage(from: backgroundImageURL) { [weak self] image in
+                DispatchQueue.main.async {
+                    if let image {
+                        self?.backgroundImage.isHidden = false
+                        self?.backgroundImage.image = image
+                    }
+                }
+            }
         }
 
         if let topDescription = exploreItem.topDescription {
@@ -128,5 +133,19 @@ class ANFExploreTableViewCell: UITableViewCell {
         } else {
             print("Invalid URL or no target set.")
         }
+    }
+
+    // MARK: - Download Image
+    private func downloadImage(from url: URL, completion: @escaping (UIImage?) -> Void) {
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            if let data = data, error == nil {
+                let image = UIImage(data: data)
+                completion(image)
+            } else {
+                print("Failed to download image: \(error?.localizedDescription ?? "Unknown error")")
+                completion(nil)
+            }
+        }
+        task.resume()
     }
 }
